@@ -10,17 +10,18 @@ import sys
 import re
 import numpy as np
 #Get arguments
-lower = sys.argv[1]
-upper = sys.argv[1]
+lower = int(sys.argv[1])
+upper = int(sys.argv[2])
 textFiles = sys.argv[3:]
 print(textFiles)
 
 def main():
     #First, construct a corpus vocab
     corpusList = []
+    corpusDict = {}
     corpusTokens = 0
 
-    #Create a list of all words in the corpus
+    #Create a dict of all words in the corpus
     for textFile in textFiles:
         thisFile = open(textFile)
         thisText = thisFile.read().lower()
@@ -30,8 +31,15 @@ def main():
         textWords = words(cleanedText).items()
         for word in textWords:
             corpusTokens += word[1]
-            if word[0] not in corpusList:
-                corpusList.append(word[0])
+            if word[0] not in corpusDict:
+                corpusDict[word[0]]=word[1]
+            else:
+                corpusDict[word[0]]+=word[1]
+    #Next create a list of all words that fit within cutoff
+    for word in corpusDict:
+        if corpusDict[word] <= upper and corpusDict[word] >= lower:
+            corpusList.append(word)
+        
     corpusList.sort()
     
     #Now, look at each text and get word frequencies (not the most efficient way to do this,
@@ -67,9 +75,9 @@ def main():
             thisComp = occurrences[i][0] + "\t" + occurrences[j][0] + "\t"
             cosTuple = (thisComp, thisCos)
             cosineList.append(cosTuple)
-            
-    print(cosineList)
-    cosineList.sort(key = lambda x: x[1], reverse=True)
+    cosineList.sort(key = lambda x: x[1], reverse=True) 
+    #Finally, print everything
+    print("Tokens: " + str(corpusTokens), "Types: " + str(len(corpusList)), "Lower: " + str(lower), "Upper: " + str(upper))
     for element in cosineList:
         print(element[0],element[1])
 
@@ -78,8 +86,7 @@ def main():
 
     
 
-    #Finally, print
-    print("Tokens: " + str(corpusTokens), "Types: " + str(len(corpusList)), "Lower: " + lower, "Upper: " + upper)
+    
 
 
 #function to get word frequency in a given text
