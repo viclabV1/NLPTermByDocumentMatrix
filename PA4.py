@@ -13,7 +13,6 @@ import numpy as np
 lower = int(sys.argv[1])
 upper = int(sys.argv[2])
 textFiles = sys.argv[3:]
-print(textFiles)
 
 def main():
     #First, construct a corpus vocab
